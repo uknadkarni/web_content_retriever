@@ -6,8 +6,8 @@ This project implements an AI-powered question answering system using LangChain,
 
 1. Clone this repository:
 ```
-git clone <repo url>
-cd <repo url>
+git clone git@github.com:uknadkarni/web_content_retriever.git
+cd web_content_retriever
 ```
 
 
