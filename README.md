@@ -30,7 +30,7 @@ Replace `your_openai_api_key` and `your_groq_api_key` with your actual API keys.
 
 1. Run the script:
 ```
-python main.py
+python web_content_retriever.py
 ```
 
 
