@@ -10,7 +10,7 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import bs4
@@ -25,13 +25,14 @@ import bs4
 
 # In[13]:
 
-
 loader=WebBaseLoader(web_path=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
                      bs_kwargs=dict(parse_only=bs4.SoupStrainer(
-                         class_=("post-title", "post-content", "post-header")
+                         class_=("post-title", "post-content", "post-header"))),
+                     requests_kwargs={"headers": {"User-Agent": "MyWebScraperBot/1.0"}}
+)
+
                          
                      
-                     )))
 text_documents=loader.load()
 
 
@@ -110,5 +111,5 @@ chain = create_retrieval_chain(retriever, question_answer_chain)
 #Define the query
 # query = "What is the capital of France?"
 query = "What are the components of an Agent System?"
-chain.invoke({"input": query})
-
+result = chain.invoke({"input": query})
+print(result['answer'])
