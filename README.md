@@ -2,12 +2,18 @@
 
 This project implements an AI-powered question answering system using LangChain, OpenAI, and Groq. It retrieves information from web content, processes it, and uses a language model to answer questions based on the retrieved context.
 
+## How Query Processing with RAG works in this program
+When a user enters a query, the chain:
+1. Uses the retriever to find relevant chunks of text from the web content.
+2. Passes these chunks along with the query to the LLM.
+3. The LLM generates an answer based on the retrieved context and the query.
+
 ## Setup
 
 1. Clone this repository:
 ```
-git clone git@github.com:uknadkarni/web_content_retriever.git
-cd web_content_retriever
+git clone <repo url>
+cd <repo url>
 ```
 
 
@@ -30,7 +36,7 @@ Replace `your_openai_api_key` and `your_groq_api_key` with your actual API keys.
 
 1. Run the script:
 ```
-python web_content_retriever.py
+python main.py
 ```
 
 
@@ -56,8 +62,13 @@ chromadb
 beautifulsoup4
 ```
 
-
 Make sure to install these dependencies using the command mentioned in the Setup section.
+
+## Choice to technologies:
+1. Chroma was used as a vector store because it is ideal for small sample applications due to its simplicity, lightweight nature, and easy embedding in Python applications. It's good for quick prototypes and small-scale AI projects.
+2. OpenAI API was used for generating embeddings
+3. GroqChat was used for its high-speed performance, low-latency text-generation, and easy integration with language models. Its API is designed to be compatible with popular frameworks like LangChain.
+   
 
 ## Note
 
