@@ -66,6 +66,8 @@ def setup_chain(retriever, llm):
 print("Welcome to the query system!")
 print("You can change the temperature, web path, or enter queries.")
 print("Type 'temp' to change temperature, 'web' to change web path, or 'bye' to exit.")
+print("From the Groq Documentation at https://console.groq.com/docs/api-reference, valid values for temperature are between 0 and 2.")
+print("Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic") 
 
 docs = load_and_process_data(web_path)
 retriever = setup_vectorstore(docs)
