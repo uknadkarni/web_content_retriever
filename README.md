@@ -36,9 +36,12 @@ Replace `your_openai_api_key` and `your_groq_api_key` with your actual API keys.
 
 1. Run the script:
 ```
-python main.py
+python web_content_retriever.py
 ```
-
+OR
+```
+streamlist run gui_web_content_retriever.py
+```
 
 2. The script will:
 - Load content from a specified web page
