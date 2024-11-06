@@ -165,22 +165,6 @@ else:
 # Process user query
 user_input = st.text_input("Enter your query:")
 
-#if user_input:
-#    try:
-#        # isinstance(chain, RetrievalQA) returns True if the chain is an instance of RetrievalQA, 
-#        # indicating it's using retrieval-augmented generation.
-#        if isinstance(chain, RetrievalQA):
-#            # "query" is used for RetrievalQA chains that perform document retrieval
-#            result = chain.invoke({"query": user_input})
-#            st.write(result['result'])
-#        else:
-#            # "question" is used for simple LLM chains without retrieval.
-#            result = chain.invoke({"question": user_input})
-#            st.write(result.content)
-#    except Exception as e:
-#        st.error(f"An error occurred: {str(e)}")
-#        st.error("Please try reloading the page or check your input.")
-
 
 if user_input:
     try:
