@@ -9,6 +9,8 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import bs4
 import chromadb
+import mlflow
+import time
 
 # Initialize default settings
 if 'temperature' not in st.session_state:
@@ -84,7 +86,6 @@ def setup_rag_chain(vectorstore, llm):
     # chain_type is set to "stuff" to use the simplest method of 
     # combining retrieved documents with the query, 
     # which is to stuff all retrieved documents into the prompt.
-    # Other options include: map_reduce, refine, map_rerank
     return RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
@@ -110,6 +111,25 @@ def setup_simple_chain(llm):
 # Set up the Streamlit UI
 st.title("Query System with Optional Retrieval Augmentation")
 
+# Get Minikube IP
+minikube_ip = os.popen('minikube ip').read().strip()
+
+# Set MLflow tracking URI using Minikube IP and MLflow service NodePort
+# Assuming MLflow service is exposed on NodePort 30500
+mlflow.set_tracking_uri(f"http://localhost:5000")
+
+# Initialize MLflow
+# Set or create the experiment
+experiment_name = f"Groq_API_Interaction_{int(time.time())}"
+# experiment_name = "Groq_API_Interaction"
+try:
+    experiment = mlflow.get_experiment_by_name(experiment_name)
+    if experiment is None:
+        mlflow.create_experiment(experiment_name)
+    mlflow.set_experiment(experiment_name)
+except Exception as e:
+    st.error(f"Error setting up MLflow experiment: {str(e)}")
+    
 # Sidebar for user settings
 st.sidebar.header("Settings")
 new_temperature = st.sidebar.slider("Temperature", 0.0, 2.0, st.session_state.temperature, 0.1)
@@ -145,22 +165,76 @@ else:
 # Process user query
 user_input = st.text_input("Enter your query:")
 
+#if user_input:
+#    try:
+#        # isinstance(chain, RetrievalQA) returns True if the chain is an instance of RetrievalQA, 
+#        # indicating it's using retrieval-augmented generation.
+#        if isinstance(chain, RetrievalQA):
+#            # "query" is used for RetrievalQA chains that perform document retrieval
+#            result = chain.invoke({"query": user_input})
+#            st.write(result['result'])
+#        else:
+#            # "question" is used for simple LLM chains without retrieval.
+#            result = chain.invoke({"question": user_input})
+#            st.write(result.content)
+#    except Exception as e:
+#        st.error(f"An error occurred: {str(e)}")
+#        st.error("Please try reloading the page or check your input.")
+
+
 if user_input:
     try:
-        # isinstance(chain, RetrievalQA) returns True if the chain is an instance of RetrievalQA, 
-        # indicating it's using retrieval-augmented generation.
-        if isinstance(chain, RetrievalQA):
-            # "query" is used for RetrievalQA chains that perform document retrieval
-            result = chain.invoke({"query": user_input})
-            st.write(result['result'])
-        else:
-            # "question" is used for simple LLM chains without retrieval.
-            result = chain.invoke({"question": user_input})
-            st.write(result.content)
+        # End any existing runs
+        mlflow.end_run()
+
+        with mlflow.start_run():
+            # Common parameters for both RAG and non-RAG
+            mlflow.log_param("temperature", st.session_state.temperature)
+            mlflow.log_param("model_name", "llama-3.2-1b-preview")
+            mlflow.log_param("max_retries", 2)
+            mlflow.log_param("user_input", user_input)
+
+            if isinstance(chain, RetrievalQA):
+                # RAG-specific logging
+                mlflow.log_param("chain_type", "RetrievalQA")
+                mlflow.log_param("web_path", st.session_state.web_path)
+
+                result = chain.invoke({"query": user_input})
+                response = result['result']
+                
+                # Log RAG-specific metadata
+                rag_metadata = {
+                    "num_source_documents": len(result.get('source_documents', [])),
+                    "source_document_titles": [doc.metadata.get('title', 'Untitled') for doc in result.get('source_documents', [])]
+                }
+                mlflow.log_dict(rag_metadata, "rag_metadata.json")
+
+            else:
+                # Non-RAG specific logging
+                mlflow.log_param("chain_type", "Simple LLM")
+                
+                result = chain.invoke({"question": user_input})
+                response = result.content
+
+            # Log the response for both RAG and non-RAG
+            mlflow.log_text(response, "response.txt")
+
+            # Log common response metadata
+            response_metadata = {
+                "response_length": len(response),
+            }
+            mlflow.log_dict(response_metadata, "response_metadata.json")
+
+            # Display the response
+            st.write(response)
+
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
         st.error("Please try reloading the page or check your input.")
-
+        # Log the error to MLflow
+        mlflow.log_param("error", str(e))
+        
+        
 # Display temperature information
 st.sidebar.markdown("""
 From the Groq Documentation:
