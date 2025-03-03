@@ -43,7 +43,7 @@ python web_content_retriever.py
 ```
 OR
 ```
-streamlist run gui_web_content_retriever.py
+streamlit run gui_web_content_retriever.py
 ```
 
 2. The script will:
