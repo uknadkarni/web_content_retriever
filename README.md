@@ -77,7 +77,7 @@ Make sure to install these dependencies using the command mentioned in the Setup
 1. Chroma was used as a vector store because it is ideal for small sample applications due to its simplicity, lightweight nature, and easy embedding in Python applications. It's good for quick prototypes and small-scale AI projects.
 2. OpenAI API was used for generating embeddings
 3. Groq's Inferencing API was used for its high-speed performance, low-latency text-generation, and easy integration with language models. Its API is designed to be compatible with popular frameworks like LangChain.
-4. MLflow was used for logging parameters, metrics and atrifacts for each run. This helps with reproducibility and analysis of experiments.
+4. MLflow was used for logging parameters, metrics and artifacts for each run. This helps with reproducibility and analysis of experiments.
    
 
 ## Note
