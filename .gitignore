@@ -129,6 +129,17 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+myenv/
+
+# Vector databases and AI model files
+chroma_db/
+*.db
+*.sqlite3
+
+# Backup and temporary files
+*.old
+*.works
+*.bak
 
 # Spyder project settings
 .spyderproject
